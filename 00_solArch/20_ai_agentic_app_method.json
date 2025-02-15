@@ -1,0 +1,32 @@
+{
+    "Agent Workflow": {
+        "Initial Input Generation Agent": "Interacts with the user to generate an initial file of raw addresses. Asks 2-3 questions to infer what kind of addresses to generate.",
+        "Address Cleansing Agent": "Standardizes and cleans the raw addresses by fixing formatting issues and ensuring consistency.",
+        "Address Validation Agent": "Integrates with the Mapbox API to verify if an address is valid. Logs errors for invalid addresses.",
+        "Geocoding Agent": "Fetches latitude and longitude for valid addresses using the Mapbox API.",
+        "Final Output Agent": "Aggregates data into a CSV file containing original addresses, cleansed addresses, and geolocation data.",
+        "Map Visualization Agent": "Uses the Mapbox API to plot the geocoded addresses onto a street view map."
+    },
+    "LangChain Integration": {
+        "Capabilities": [
+            "Agents execute tasks independently while retaining access to shared memory.",
+            "Agents can query the Mapbox API when needed.",
+            "Logs errors and status updates at each step."
+        ],
+        "Memory Module": [
+            "Stores generated raw addresses from Initial Input Generation Agent.",
+            "Retains cleansed and validated addresses.",
+            "Logs API responses for debugging."
+        ]
+    },
+    "Logging Implementation": {
+        "Logging Details": [
+            "User inputs and generated raw addresses.",
+            "Address cleansing transformations applied.",
+            "API validation results (success/failure logs).",
+            "Geolocation API responses.",
+            "Final output file generation status."
+        ],
+        "Log Format": "Logs will be stored in JSON format for structured readability."
+    }
+}

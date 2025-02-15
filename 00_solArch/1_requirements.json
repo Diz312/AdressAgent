@@ -1,0 +1,25 @@
+{
+    "Must-Have": [
+        "Agent-based workflow to process input files containing raw address data",
+        "Initial Input Generation Agent that interacts with the user to generate raw addresses",
+        "Address Cleansing Agent to standardize and clean the addresses",
+        "Address Validation Agent that verifies addresses using the Mapbox API",
+        "Geocoding Agent to fetch latitude and longitude for validated addresses",
+        "Memory to store context for address transformations",
+        "Final Output Agent that generates a CSV with original, cleansed, and geocoded addresses",
+        "Map Visualization Agent to use Mapbox APIs to plot the addresses on a street view map",
+        "Adequate Logging to capture critical steps, errors, and key decision points for troubleshooting"
+    ],
+    "Should-Have": [
+        "Support for multiple file formats (CSV, JSON, Excel)",
+        "Ability to process large datasets efficiently",
+        "Log errors for unprocessable addresses"
+    ],
+    "Could-Have": [
+        "UI to visualize the processed addresses on a map",
+        "Support for multiple geolocation APIs (e.g., Google Maps, OpenStreetMap)"
+    ],
+    "Wont-Have (for now)": [
+        "Advanced address parsing with ML-based NLP models"
+    ]
+}

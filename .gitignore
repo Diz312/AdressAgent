@@ -1,0 +1,58 @@
+#STANDARDS
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+
+# Logs and databases
+*.log
+db.sqlite3
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+*.cover
+*.py,cover
+
+# Distribution / packaging
+.Python
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS system files
+.DS_Store
+
+# VSCode settings
+.vscode/
+
+# Python environment variables
+.env
+secrets.env
+config/secrets.env
+
+# Ignore storage files
+data/*
+logs/*
+
+# Ignore compiled Cython files
+*.so
+
+# Ignore mypy cache
+.mypy_cache/
+
+# Ignore pytest cache
+.pytest_cache/
+
+# Ignore IDE metadata
+.idea/
+*.iml
+

@@ -1,0 +1,5 @@
+{
+  "PYTHONPATH": "E:/Python/GitHub/AdressAgent",
+  "LOG_FILE": "${PYTHONPATH}/logs/logs.json",
+  "ADDRESS_FILE": "${PYTHONPATH}/data/addresses.json"
+}

@@ -1,0 +1,2 @@
+# Ignore the secrets.env file exclusively
+secrets.env

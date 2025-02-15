@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "input_addresses": {
+            "type": "array",
+            "description": "List of addresses processed in the system",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "original_address": {
+                        "type": "string",
+                        "description": "Raw user-provided address"
+                    }
+                },
+                "required": ["original_address"]
+            }
+        }
+    },
+    "required": ["input_addresses"]
+} 

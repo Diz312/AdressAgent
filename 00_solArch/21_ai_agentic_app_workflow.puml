@@ -1,0 +1,18 @@
+
+@startuml
+actor User
+participant "Input Generation Agent" as A1
+participant "Cleansing Agent" as A2
+participant "Validation Agent" as A3
+participant "Geocoding Agent" as A4
+participant "Final Output Agent" as A5
+participant "Map Visualization Agent" as A6
+
+User -> A1: Provide input details
+A1 -> A2: Generate raw address file
+A2 -> A3: Clean and standardize addresses
+A3 -> A4: Validate addresses via Mapbox API
+A4 -> A5: Fetch latitude and longitude
+A5 -> A6: Generate CSV file
+A6 -> User: Display addresses on Mapbox map
+@enduml

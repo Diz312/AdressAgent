@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Output Address Schema",
+    "type": "object",
+    "properties": {
+        "output_addresses": {
+            "type": "array",
+            "description": "List of addresses processed in the system",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "house_number": {
+                        "type": "string",
+                        "description": "House or building number"
+                    },
+                    "street_name": {
+                        "type": "string",
+                        "description": "Street name"
+                    },
+                    "street_suffix": {
+                        "type": "string",
+                        "description": "Road type (Ave, Blvd, St, Dr, etc.)"
+                    },
+                    "unit_number": {
+                        "type": "string",
+                        "description": "Apartment, suite, or unit number"
+                    },
+                    "floor_number": {
+                        "type": "string",
+                        "description": "Floor number within a building"
+                    },
+                    "building_name": {
+                        "type": "string",
+                        "description": "Name of the building (if applicable)"
+                    },
+                    "neighborhood": {
+                        "type": "string",
+                        "description": "Local neighborhood or district"
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City or locality"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State or province"
+                    },
+                    "postal_code": {
+                        "type": "string",
+                        "description": "ZIP or postal code"
+                    },
+                    "country": {
+                        "type": "string",
+                        "description": "Country name"
+                    },
+                    "validated": {
+                        "type": "boolean",
+                        "description": "True if the address is valid, False otherwise"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "description": "Latitude of the validated address"
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "Longitude of the validated address"
+                    },
+                    "error_message": {
+                        "type": "string",
+                        "description": "Error message if validation failed"
+                    }
+                },
+                "required": [
+                    "house_number",
+                    "street_name",
+                    "city",
+                    "state",
+                    "postal_code",
+                    "country",
+                    "validated"
+                ]
+            }
+        }
+    }
+} 
