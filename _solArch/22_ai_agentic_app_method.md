@@ -32,4 +32,4 @@ Logging captures critical steps:
 
 The workflow of the agentic system is represented below:
 
-![AI Agentic App Workflow](http://localhost:32768/png/PP0zQyCm48Pt_OeZUuVuQz1G42a96Ke3fTwlrZKzK2KXoMcRNrzPE60tYq3Sm_k5Gt81tY85uJ4a7jYZJR0vMZycE92bW8cT1NKccpQ04THsZUuCeOripqkcMZCz6jPtGlKQEf0RdFudrAoPFLiqy3AcATu2QzVOCtheEOxPzdfdsman5OQ7nzn5mYcu2si2BfKr9MGJXTgMUoLl8n04_0RKEb2CyC66XAeAKqie6m1Q3J7b5uFcAzrWocfr8Hi9ynAB8rmO8GT-Tp-WJaUXciAs4lQKXaymkK0QSy19tZXxBZ-Xse9rYu2xrtuErastgQI49uxUuE_2BwynstsX_mC0)
+![AI Agentic App Workflow](./images/AgentFlowUML.png)
