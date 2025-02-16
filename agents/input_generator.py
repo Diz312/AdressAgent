@@ -7,8 +7,9 @@ from datetime import datetime
 import pytz
 import os
 import jsonschema
-from persistance.json_storage import JSONStorageHandler
 import yaml
+from persistance.json_storage import JSONStorageHandler
+from config.load_config import config
 
 class InitialInputGenerationAgent:
     """

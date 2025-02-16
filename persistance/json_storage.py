@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 import json
 import pytz
-from config.load_config import config
 from persistance.storage_handler import StorageHandler
 
 class JSONStorageHandler(StorageHandler):
