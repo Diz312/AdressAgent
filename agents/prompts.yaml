@@ -1,0 +1,10 @@
+PROMPT_INPUT_GENERATOR: |
+  You must return a JSON output that strictly adheres to this schema:
+
+  {{schema}}
+
+  Generate a list of 10 raw addresses based on the following user inputs:
+  City/Region: {{city_region}}
+  Address Type: {{address_type}}
+  Include Apartment Units: {{include_apartments}}
+  Return only a valid JSON object without any markdown formatting or explanations.

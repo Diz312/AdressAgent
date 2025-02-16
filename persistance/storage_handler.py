@@ -9,18 +9,8 @@ class StorageHandler(ABC):
     def save_addresses(self, data):
         """Save address data to storage."""
         pass
-
-    @abstractmethod
-    def load_addresses(self):
-        """Load address data from storage."""
-        pass
-
+    
     @abstractmethod
     def save_logs(self, log_entry):
         """Save a log entry to storage."""
         pass
-
-    @abstractmethod
-    def load_logs(self):    
-        """Load logs from storage."""
-        pass 

@@ -1,24 +1,26 @@
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import AgentType, initialize_agent
 from langchain.tools import Tool
 import json
 from datetime import datetime
-
-# Add the root directory of the project to the system path
-import sys
+import pytz
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import jsonschema
 from persistance.json_storage import JSONStorageHandler
+import yaml
 
 class InitialInputGenerationAgent:
     """
     Agent responsible for interacting with the user to generate an initial set of raw addresses.
     """
-    def __init__(self, model_name='gpt-4', temperature=0.5):
-        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
+    def __init__(self, model_name='gpt-4o', temperature=0.5):
+        open_api_key = os.getenv('OPEN_API_KEY')  # Retrieve the API key from environment variables
+        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature, api_key=open_api_key)
         self.memory = ConversationBufferMemory()
         self.storage = JSONStorageHandler()
+        with open('./agents/prompts.yaml', 'r') as file:
+            self.prompts = yaml.safe_load(file)
 
     def ask_user_questions(self):
         """
@@ -41,35 +43,45 @@ class InitialInputGenerationAgent:
         """
         Uses LLM to generate synthetic address data based on user responses.
         """
-        prompt = (
-            f"Generate a list of 5 raw addresses based on the following user inputs:\n"
-            f"City/Region: {user_responses['Which city or region should the addresses be from?']}\n"
-            f"Address Type: {user_responses['Do you need residential, commercial, or mixed-type addresses?']}\n"
-            f"Include Apartment Units: {user_responses['Should we include apartment buildings and units? (Yes/No)']}\n"
-            f"Provide output as a JSON list of addresses."
-        )
-        
-        response = self.llm(prompt)
-        addresses = json.loads(response.content)  # Ensure LLM returns valid JSON
-        
-        return addresses
-    
+        # Load the JSON schema
+        schema_path = os.getenv('SCHEMA_INPUT_ADDRESS')  # Retrieve the schema path from environment variables
+        with open(schema_path) as schema_file:
+            schema = json.load(schema_file)
+
+        # Load the prompt from the YAML file
+        prompt_template = self.prompts['PROMPT_INPUT_GENERATOR']
+        prompt = prompt_template.replace("{{schema}}", json.dumps(schema, indent=4))
+        prompt = prompt.replace("{{city_region}}", user_responses['Which city or region should the addresses be from?'])
+        prompt = prompt.replace("{{address_type}}", user_responses['Do you need residential, commercial, or mixed-type addresses?'])
+        prompt = prompt.replace("{{include_apartments}}", user_responses['Should we include apartment buildings and units? (Yes/No)'])
+
+        response = self.llm.invoke(prompt)
+        print(response)
+        try:
+            response_json = json.loads(response.content)
+            jsonschema.validate(instance=response_json, schema=schema)
+            return response_json.get("input_addresses", [])
+        except (json.JSONDecodeError, jsonschema.exceptions.ValidationError) as e:
+            log_entry = {
+                "timestamp": datetime.now(pytz.utc).isoformat(),
+                "agent": "Initial Input Generation Agent",
+                "message": f"Error: LLM did not provide a proper JSON response. {e}"
+            }
+            self.storage.save_logs(log_entry)
+            return []  # Return empty list if invalid
+  
     def save_generated_addresses(self, addresses):
         """
         Saves the generated addresses to the JSON storage system.
         """
-        formatted_addresses = [
-            {"original_address": addr, "cleansed_address": {}, "validated": False, "latitude": None, "longitude": None, "error_message": ""}
-            for addr in addresses
-        ]
-        
+        formatted_addresses = {"input_addresses": addresses}
         self.storage.save_addresses(formatted_addresses)
         
         # Log the event
         log_entry = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(pytz.utc).isoformat(),
             "agent": "Initial Input Generation Agent",
-            "message": f"Generated and stored {len(addresses)} addresses."
+            "message": f"Generated and stored {len(formatted_addresses['input_addresses'])} addresses."
         }
         self.storage.save_logs(log_entry)
     
@@ -80,7 +92,7 @@ class InitialInputGenerationAgent:
         user_responses = self.ask_user_questions()
         addresses = self.generate_addresses(user_responses)
         self.save_generated_addresses(addresses)
-        print("✅ Addresses successfully generated and stored!")
+        print("Addresses successfully generated and stored!")
         
 # Example usage
 if __name__ == "__main__":
