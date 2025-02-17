@@ -41,6 +41,14 @@ def process_variable(value: str, config_data: dict[str, Any], processed: set[str
             replacement = process_variable(replacement, config_data, processed)
             value = value.replace(placeholder, replacement)
     
+    # Check for environment variables
+    for env_key, env_value in os.environ.items():
+        placeholder = f'${{{env_key}}}'
+        if placeholder in value:
+            # Recursively process the environment variable value
+            env_value = process_variable(env_value, config_data, processed)
+            value = value.replace(placeholder, env_value)
+    
     return value
 
 def normalize_path(path_str: str) -> str:
@@ -102,7 +110,7 @@ config = load_config()
 if __name__ == '__main__':
     def pretty_print_env_vars(indent=0):
         """Recursively print environment variables with proper indentation"""
-        for key, value in os.environ.items():
+        for key, value in config.__dict__.items():
             prefix = "    " * indent
             print(f"{prefix}{key}: {value}")
 

@@ -1,8 +1,7 @@
 {
-  "PYTHONPATH": "E:/Python/GitHub/AdressAgent",
-  "LOG_FILE": "${PYTHONPATH}/logs/logs.json",
-  "ADDRESS_FILE": "${PYTHONPATH}/data/addresses.json",
-  "SCHEMA_INPUT_ADDRESS": "${PYTHONPATH}/persistance/schemas/input_address.json",
-  "SCHEMA_OUTPUT_ADDRESS": "${PYTHONPATH}/persistance/schemas/output_address.json",
-  "SCHEMA_LOG": "${PYTHONPATH}/persistance/schemas/log.json"
+  "STORAGE_PATH": "${PROJ_ROOT}/data",
+  "LOG_FILE_PATH": "${PROJ_ROOT}/logs/logs.json",
+  "ADDRESS_FILE_PATH": "${PROJ_ROOT}/data/addresses.json",
+  "SCHEMA_INPUT_ADDRESS_PATH": "${PROJ_ROOT}/persistance/schemas/input_address.json",
+  "SCHEMA_OUTPUT_ADDRESS_PATH": "${PROJ_ROOT}/persistance/schemas/output_address.json"
 }

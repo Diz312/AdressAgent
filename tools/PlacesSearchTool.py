@@ -128,6 +128,9 @@ if __name__ == "__main__":
     response = search_places(query)
     
     # Write the response to a JSON file
-    with open('search_results.json', 'w', encoding='utf-8') as f:
-        f.write(response)
+    storage_path = config.STORAGE_PATH
+    file_path = os.path.join(storage_path, 'search_results.json')
+    print(f"Writing response to {file_path}")
     
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(response)    
