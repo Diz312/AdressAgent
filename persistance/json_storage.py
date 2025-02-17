@@ -3,14 +3,15 @@ from datetime import datetime
 import json
 import pytz
 from persistance.storage_handler import StorageHandler
+from config.load_config import config  # Import the config object
 
 class JSONStorageHandler(StorageHandler):
     """
     Handles storing and retrieving address and log data using JSON files.
     """
     def __init__(self):
-        self.address_file = os.environ.get('ADDRESS_FILE')
-        self.log_file = os.environ.get('LOG_FILE')
+        self.address_file = config.get('ADDRESS_FILE_PATH')  # Use config object
+        self.log_file = config.get('LOG_FILE_PATH')  # Use config object
 
     def save_addresses(self, data):
         """Appends address data to the JSON file."""
