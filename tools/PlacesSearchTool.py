@@ -39,7 +39,7 @@ def search_places(query: str) -> str:
             type=None
         )
         
-        # Get the first result (most relevant)
+        # Get the first result (most relevant to validate the structuring of response. Turn this into a loop to get all results)
         if places_result.get('results'):
             place = places_result['results'][0]
             
