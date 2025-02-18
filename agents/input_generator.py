@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import AgentType, initialize_agent
 from langchain.tools import Tool
+from tools.PlacesSearchTool import PlacesSearchTool
 import json
 from datetime import datetime
 import pytz
@@ -16,12 +17,19 @@ class InitialInputGenerationAgent:
     Agent responsible for interacting with the user to generate an initial set of raw addresses.
     """
     def __init__(self, model_name='gpt-4o', temperature=0.5):
+        """Initialize the agent with the LLM and required tools."""
         open_api_key = os.getenv('OPEN_API_KEY')  # Retrieve the API key from environment variables
         self.llm = ChatOpenAI(model_name=model_name, temperature=temperature, api_key=open_api_key)
         self.memory = ConversationBufferMemory()
+        self.tools = [PlacesSearchTool]
+        self.agent = initialize_agent(
+            tools=self.tools,
+            llm=self.llm,
+            agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+            memory=self.memory,
+            verbose=True
+        )
         self.storage = JSONStorageHandler()
-        with open('./agents/prompts.yaml', 'r') as file:
-            self.prompts = yaml.safe_load(file)
 
     def ask_user_questions(self):
         """
@@ -29,8 +37,8 @@ class InitialInputGenerationAgent:
         """
         questions = [
             "Which city or region should the addresses be from?",
-            "Do you need residential, commercial, or mixed-type addresses?",
-            "Should we include apartment buildings and units? (Yes/No)"
+            "How big of a radius should we search for addresses?",
+            "What type of addresses should we search for?"
         ]
         
         responses = {}
@@ -40,36 +48,53 @@ class InitialInputGenerationAgent:
             
         return responses
     
+    def create_search_query(self, user_responses):
+        """Create a search query based on user responses using the LLM."""
+        query_prompt = f"Based on these parameters:\n" \
+                      f"- Location: {user_responses['Which city or region should the addresses be from?']}\n" \
+                      f"- Radius: {user_responses['How big of a radius should we search for addresses?']}\n" \
+                      f"- Type: {user_responses['What type of addresses should we search for?']}\n\n" \
+                      f"Create a text search query to be passed to Google Places API that will return relevant addresses. " \
+                      f"Iterate on the query at least 10 times or more until you get a good balance of specificity and breadth that will return the best matches from the Google Places API. " \
+                      f"Do not include any additional infromation from your reasoning only the pure query that will be passed to the Google Places API." \
+                      f"The query should be in natural language and not a URL call." \
+                      f"Do not include any additional information in the query (e.g. API key, etc.)"
+
+        response = self.llm.invoke(query_prompt)
+        return response.content
+
     def generate_addresses(self, user_responses):
         """
         Uses LLM to generate synthetic address data based on user responses.
         """
-        # Load the JSON schema
-        schema_path = os.getenv('SCHEMA_INPUT_ADDRESS')  # Retrieve the schema path from environment variables
-        with open(schema_path) as schema_file:
-            schema = json.load(schema_file)
+        # First, create a search query based on user responses
+        search_query = self.create_search_query(user_responses)
+        print(f"Generated search query: {search_query}")
 
-        # Load the prompt from the YAML file
-        prompt_template = self.prompts['PROMPT_INPUT_GENERATOR']
-        prompt = prompt_template.replace("{{schema}}", json.dumps(schema, indent=4))
-        prompt = prompt.replace("{{city_region}}", user_responses['Which city or region should the addresses be from?'])
-        prompt = prompt.replace("{{address_type}}", user_responses['Do you need residential, commercial, or mixed-type addresses?'])
-        prompt = prompt.replace("{{include_apartments}}", user_responses['Should we include apartment buildings and units? (Yes/No)'])
-
-        response = self.llm.invoke(prompt)
-        print(response)
+        # Use the PlacesSearchTool to get real address data
         try:
-            response_json = json.loads(response.content)
-            jsonschema.validate(instance=response_json, schema=schema)
-            return response_json.get("input_addresses", [])
-        except (json.JSONDecodeError, jsonschema.exceptions.ValidationError) as e:
+            places_result = self.tools[0].func(search_query)
+            places_data = json.loads(places_result)
+            
+         # Loop through all results and map them into the expected format
+            formatted_addresses = []
+            for place in places_data.get("results", []):  # Extracting the list of places
+
+                formatted_addresses.append({
+                    "original_address": place.get("formatted_address", ""),
+                })
+
+            print("FORMATTED ADDRESSES: ", formatted_addresses)
+            return formatted_addresses  # Return the list of formatted addresses
+            
+        except Exception as e:
             log_entry = {
                 "timestamp": datetime.now(pytz.utc).isoformat(),
                 "agent": "Initial Input Generation Agent",
-                "message": f"Error: LLM did not provide a proper JSON response. {e}"
+                "message": f"Error: Failed to process places search. {e}"
             }
             self.storage.save_logs(log_entry)
-            return []  # Return empty list if invalid
+            return []
   
     def save_generated_addresses(self, addresses):
         """

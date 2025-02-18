@@ -39,68 +39,8 @@ def search_places(query: str) -> str:
             type=None
         )
         
-        # Get the first result (most relevant to validate the structuring of response. Turn this into a loop to get all results)
-        if places_result.get('results'):
-            place = places_result['results'][0]
-            
-            # Create the response structure
-            place_data = {
-                "place": {
-                    "basic_info": {
-                        "name": place.get('name', ''),
-                        "place_id": place.get('place_id', ''),
-                        "types": place.get('types', [])
-                    },
-                    "address": {
-                        "formatted": place.get('formatted_address', ''),
-                        "components": place.get('address_components', [])
-                    },
-                    "location": {
-                        "coordinates": place.get('geometry', {}).get('location', {}),
-                        "viewport": place.get('geometry', {}).get('viewport', {})
-                    },
-                    "business": {
-                        "status": place.get('business_status', ''),
-                        "rating": place.get('rating', None),
-                        "user_ratings_total": place.get('user_ratings_total', 0),
-                        "price_level": place.get('price_level', None)
-                    }
-                }
-            }
-            
-            # Get additional place details
-            if place.get('place_id'):
-                try:
-                    place_details = gmaps.place(
-                        place['place_id'],
-                        fields=[
-                            'formatted_phone_number',
-                            'website',
-                            'opening_hours'
-                        ]
-                    )
-                    
-                    if place_details.get('result'):
-                        details = place_details['result']
-                        place_data["place"]["contact"] = {
-                            "phone": details.get('formatted_phone_number', ''),
-                            "website": details.get('website', '')
-                        }
-                        
-                        place_data["place"]["hours"] = {
-                            "open_now": details.get('opening_hours', {}).get('open_now', None),
-                            "periods": details.get('opening_hours', {}).get('periods', [])
-                        }
-                        
-                except Exception as detail_error:
-                    place_data["place"]["errors"] = {
-                        "detail_fetch_error": str(detail_error)
-                    }
-            
-            # Clean and sanitize the response
-            cleaned_response = clean_dict(place_data)
-            
-            # Return formatted JSON string
+        if places_result:
+            cleaned_response = clean_dict(places_result)
             return json.dumps(cleaned_response, ensure_ascii=False, indent=2)
         else:
             return json.dumps({"error": "No places found for the query"}, indent=2)
